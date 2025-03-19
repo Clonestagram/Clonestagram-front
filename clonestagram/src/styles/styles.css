@@ -1,0 +1,55 @@
+/* 전체 레이아웃 */
+.app-container {
+    display: flex;
+  }
+  
+  /* 왼쪽 사이드바 */
+  .sidebar {
+    width: 250px;
+    height: 100vh;
+    border-right: 1px solid #ddd;
+    padding: 16px;
+    background-color: #fff;
+  }
+  
+  /* 메인 피드 */
+  .feed {
+    flex: 1;
+    padding: 16px;
+  }
+  
+  /* 오른쪽 사이드바 */
+  .rightbar {
+    width: 250px;
+    height: 100vh;
+    border-left: 1px solid #ddd;
+    padding: 16px;
+    background-color: #fff;
+  }
+  
+  /* 게시물 스타일 */
+  .post {
+    border: 1px solid #ddd;
+    padding: 16px;
+    margin-bottom: 16px;
+    background-color: #fff;
+  }
+  
+  .post-image {
+    width: 100%;
+    border-radius: 8px;
+  }
+  
+  /* 댓글 섹션 */
+  .comment-section {
+    margin-top: 8px;
+  }
+  
+  /* 좋아요 버튼 */
+  .like-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  

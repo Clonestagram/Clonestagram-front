@@ -1,5 +1,6 @@
 #root {
-  max-width: 1280px;
+  width: 100vw; /* 전체 화면 너비 사용 */
+  max-width: 100%; /* 최대 너비 제한 해제 */
   margin: 0 auto;
   padding: 2rem;
   text-align: center;

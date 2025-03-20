@@ -5,22 +5,27 @@
   
   /* 왼쪽 사이드바 */
   .sidebar {
-    width: 250px;
+    flex: 1 1 200px;
     height: 100vh;
     border-right: 1px solid #ddd;
     padding: 16px;
-    background-color: #fff;
+    background-color: #7a6868;
   }
   
+  .sidebar.compact {
+    width: 80px; /* compact 버전의 너비 */
+  }
+
   /* 메인 피드 */
   .feed {
     flex: 1;
     padding: 16px;
+    background-color: #e9b3b3;
   }
   
   /* 오른쪽 사이드바 */
   .rightbar {
-    width: 250px;
+    width: 300px;
     height: 100vh;
     border-left: 1px solid #ddd;
     padding: 16px;
@@ -30,9 +35,10 @@
   /* 게시물 스타일 */
   .post {
     border: 1px solid #ddd;
+    height: 750px;
     padding: 16px;
     margin-bottom: 16px;
-    background-color: #fff;
+    background-color: #b5b5b5;
   }
   
   .post-image {

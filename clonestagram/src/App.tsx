@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Box } from "@mui/material";
+import { Box, useMediaQuery } from "@mui/material";
 import Sidebar from "./components/Sidebar";
 import Rightbar from "./components/Rightbar";
 import Home from "./pages/Home";
@@ -12,26 +12,43 @@ import Notifications from "./pages/Notifications";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
+import { useState, useEffect } from "react";
 
 function App() {
+  const isCompact = useMediaQuery('(max-width: 800px)'); // 800px 이하일 때 Sidebar compact 버전 사용
+  const showRightbar = useMediaQuery('(min-width: 1000px)'); // 1000px 이상일 때 Rightbar 표시
+
   return (
     <Router>
       <Box display="flex">
-        <Sidebar /> {/* 왼쪽 네비게이션 바 */}
-        <Box flex={1} sx={{ maxWidth: 600, margin: "auto" }}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/profile/:username" element={<Profile />} />
-            <Route path="/post/:postId" element={<PostDetail />} />
-            <Route path="/messages" element={<Messages />} />
-            <Route path="/explore" element={<Explore />} />
-            <Route path="/notifications" element={<Notifications />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+
+        <Box flex="0.2 0.2 250px" sx={{backgroundColor: "lightgray", marginRight: "25px"}}> 
+          <Sidebar isCompact={isCompact} /> {/* 왼쪽 네비게이션 바 */}
         </Box>
-        <Rightbar /> {/* 오른쪽 사이드바 */}
+
+        <Box display="flex" flex="1 1 1200px" sx={{ overflow: 'auto', height: "2000px", justifyContent: "flex-start" }}>
+          <Box display="flex" flexDirection="row" flex="1" sx={{ marginLeft: "30px", justifyContent: "flex-start" }}>
+            <Box flex="0 0 520px" sx={{ margin: "auto", marginTop: "10px", height: "2000px", backgroundColor: "lightgray"}}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/profile/:username" element={<Profile />} />
+                <Route path="/post/:postId" element={<PostDetail />} />
+                <Route path="/messages" element={<Messages />} />
+                <Route path="/explore" element={<Explore />} />
+                <Route path="/notifications" element={<Notifications />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Box>
+            {showRightbar && (
+              <Box flex="0 0 400px" sx={{ backgroundColor: "skyblue" }}>
+                <Rightbar /> {/* 오른쪽 사이드바 */}
+              </Box>
+            )}
+            </Box>
+        </Box>
+  
       </Box>
     </Router>
   );

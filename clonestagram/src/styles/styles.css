@@ -18,6 +18,7 @@
 
   /* 메인 피드 */
   .feed {
+    position: relative;
     flex: 1;
     padding: 16px;
     background-color: #e9b3b3;
@@ -59,3 +60,26 @@
     font-size: 16px;
   }
   
+  .action-buttons {
+    display: flex;
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    align-items: center;
+    gap: 15px; /* 아이콘 간격 */
+    margin-top: 100px;
+    padding: 5px;
+    border-top: 1px solid #b1b1b1;
+    background-color: rgb(108, 91, 91);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+  }
+  
+  .action-buttons span {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .contents {
+    margin-bottom: 50px;
+  }

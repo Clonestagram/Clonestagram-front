@@ -1,13 +1,29 @@
 import "/src/styles/styles.css";
 
-const CommentSection = () => {
-    return (
-      <div className="comment-section">
-        <h4>댓글</h4>
-        <p>사용자1: 멋진 사진이네요!</p>
-      </div>
-    );
-  };
+interface Comment {
+  username: string;
+  text: string;
+}
+
+interface CommentSectionProps {
+  comments?: Comment[];
+}
+
+const CommentSection: React.FC<CommentSectionProps> = ({ comments = [] }) => {
+  return (
+    <div className="comment-section">
+      <h4>댓글</h4>
+      {comments.length === 0 ? (
+        <p>댓글이 없습니다.</p>
+      ) : (
+        comments.map((comment, index) => (
+          <p key={index}>
+            <strong>{comment.username}:</strong> {comment.text}
+          </p>
+        ))
+      )}
+    </div>
+  );
+};
 
 export default CommentSection;
-

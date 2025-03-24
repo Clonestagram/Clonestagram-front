@@ -47,7 +47,7 @@ function App() {
               </QueryClientProvider>
             </Box>
             {showRightbar && (
-              <Box flex="0 0 400px" sx={{ backgroundColor: "skyblue" }}>
+              <Box flex="0 0 400px">
                 <Rightbar /> {/* 오른쪽 사이드바 */}
               </Box>
             )}

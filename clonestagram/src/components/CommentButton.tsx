@@ -37,24 +37,46 @@ const CommentButton: React.FC<CommentButtonProps> = ({ postId }) => {
       </IconButton>
 
       {/* MUI 다이얼로그 (팝업) */}
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-        <DialogTitle>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        fullWidth
+        maxWidth={false} // 👉 사이즈 제한 해제
+        PaperProps={{
+            style: {
+                width: "1250px",           // 👉 원하는 팝업 너비
+                maxHeight: "90vh",        // 👉 최대 높이 제한
+                borderRadius: "12px",
+                overflow: "hidden",       // 내부 콘텐츠 넘침 방지
+            },
+        }}
+        >
+        <DialogTitle sx={{ m: 0, p: 2 }}>
           게시물 상세보기
           <IconButton
             aria-label="close"
             onClick={handleClose}
-            sx={{ position: "absolute", right: 8, top: 8 }}
-          >
+            sx={{
+                position: "absolute",
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.grey[500],
+            }}
+            >
             <CloseIcon />
-          </IconButton>
+            </IconButton>
         </DialogTitle>
-        <DialogContent>
-          {/* ✅ postData가 있을 경우에만 Post 컴포넌트 렌더링 */}
-          {postData ? <Post postId={postId} data={postData} /> : <p>게시물을 찾을 수 없습니다.</p>}
+
+        <DialogContent dividers>
+            {postData ? (
+            <Post postId={postId} data={postData} />
+            ) : (
+            <p>게시물을 찾을 수 없습니다.</p>
+            )}
         </DialogContent>
-      </Dialog>
-    </div>
-  );
-};
+        </Dialog>
+        </div>
+        );
+    };
 
 export default CommentButton;

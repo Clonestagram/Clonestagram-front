@@ -1,27 +1,40 @@
+import React from "react";
 import CommentSection from "./CommentSection";
 import "/src/styles/styles.css";
 import { FeedData } from "../data/feedData";
+import Contents from "./Contents";
 
 interface PostProps {
   postId: number;
-  data: FeedData; // ✅ data를 props로 받아옴
+  data: FeedData;
 }
 
-const Post: React.FC<PostProps> = ({ postId, data }) => { // ✅ props에서 data를 구조 분해 할당
+const Post: React.FC<PostProps> = ({ postId, data }) => {
   return (
-    <div className="post">
-      <h3>게시물 상세 정보</h3>
-      <p><strong>게시물 ID:</strong> {postId}</p>
-      <p><strong>작성자:</strong> {data.username}</p>
-      <p><strong>내용:</strong> {data.content}</p>
+    <div className="post-wrapper">
+      {/* 왼쪽: 이미지 */}
+      <div className="post-image">
+        <Contents content={data.content} image={data.image} />
+      </div>
 
-      {/* 댓글 섹션 */}
-      <CommentSection 
-        comments={Array.from({ length: data.comments }, (_, i) => ({
-          username: `user${i + 1}`,
-          text: `댓글 ${i + 1}`,
-        }))} 
-      />
+      {/* 오른쪽: 작성자, 본문, 댓글 */}
+      <div className="post-details">
+        <div className="post-header">
+          <div className="profile-pic" />
+          <span className="username">{data.username}</span>
+        </div>
+
+        <div className="post-body">
+          <p className="post-caption"><strong>{data.username}</strong> {data.content}</p>
+        </div>
+
+        <CommentSection
+          comments={Array.from({ length: data.comments }, (_, i) => ({
+            username: `user${i + 1}`,
+            text: `댓글 ${i + 1}`,
+          }))}
+        />
+      </div>
     </div>
   );
 };

@@ -4,14 +4,17 @@ import ShareButton from "./ShareButton";
 import CommentSection from "./CommentSection";
 import Contents from "./Contents";
 import { FeedData } from "../data/feedData";
+import { usePostSeenObserver } from "../hooks/usePostSeenObserver";
 
 interface FeedProps {
   data: FeedData;
+  onSeen: (postId: number) => void;
 }
 
-const Feed: React.FC<FeedProps> = ({ data }) => {
+const Feed: React.FC<FeedProps> = ({ data, onSeen }) => {
+  const ref = usePostSeenObserver(data.id, onSeen);
   return (
-    <div className="feed">
+    <div ref={ref} className="feed">
       <h4>{data.username}</h4>
       <Contents content={data.content} image={data.image} />
 

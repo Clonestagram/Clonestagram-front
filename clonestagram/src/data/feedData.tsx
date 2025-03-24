@@ -12,7 +12,7 @@ export interface FeedData {
 }
 
 // 100개의 더미 피드 생성
-const feedData: FeedData[] = Array.from({ length: 100 }, (_, index) => ({
+const feedData: FeedData[] = Array.from({ length: 1000 }, (_, index) => ({
   id: index + 1,
   username: `user${index + 1}`,
   content: `This is post ${index + 1}`,

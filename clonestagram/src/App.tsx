@@ -12,7 +12,10 @@ import Notifications from "./pages/Notifications";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
-import { useState, useEffect } from "react";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient(); // ✅ 인스턴스 생성
+
 
 function App() {
   const isCompact = useMediaQuery('(max-width: 800px)'); // 800px 이하일 때 Sidebar compact 버전 사용
@@ -29,6 +32,7 @@ function App() {
         <Box display="flex" flex="1 1 1200px" sx={{ overflow: 'auto', height: "2000px", justifyContent: "flex-start" }}>
           <Box display="flex" flexDirection="row" flex="1" sx={{ marginLeft: "30px", justifyContent: "flex-start" }}>
             <Box flex="0 0 520px" sx={{ margin: "auto", marginTop: "10px", height: "2000px", backgroundColor: "lightgray"}}>
+            <QueryClientProvider client={queryClient}>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/profile/:username" element={<Profile />} />
@@ -40,6 +44,7 @@ function App() {
                 <Route path="/signup" element={<Signup />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              </QueryClientProvider>
             </Box>
             {showRightbar && (
               <Box flex="0 0 400px" sx={{ backgroundColor: "skyblue" }}>

@@ -42,6 +42,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isCompact, onOpenUpload, onToggleSear
   return (
     <div style={sidebarStyle} className={isCompact ? "sidebar compact" : "sidebar"}>
       <div>
+        <div>
+          <img
+            src="/clonestagram.png"
+            alt="logo"
+            style={{ width: '60%', padding: '12px 0', display: 'flex'}}
+          />
+        </div>
         <Link to="/" style={itemStyle}>
           <Home size={30} /> {!isCompact && '홈'}
         </Link>

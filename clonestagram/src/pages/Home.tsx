@@ -8,7 +8,6 @@ export default function Home() {
   return (
     // <QueryClientProvider client={queryClient}>
       <div>
-        <h3>Instagram Home Feed 📸</h3>
         <FeedList />
       </div>
     // </QueryClientProvider>

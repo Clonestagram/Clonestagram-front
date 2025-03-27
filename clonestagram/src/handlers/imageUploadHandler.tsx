@@ -1,4 +1,5 @@
 // handlers/imageUploadHandler.ts
+import { extractHashtags } from "../utils/extractHashtags";
 import { getNextIndex, saveBlobToFile } from "../utils/storage";
 import { uploadToCloudinary } from "../utils/uploadToCloudinary";
 
@@ -49,10 +50,14 @@ export const handleImageSubmit = async (
 
         console.log("📸 이미지 파일 생성 완료:", filename);
 
+
+        const hashtags = extractHashtags(caption);
         // 🟡 서버 전송 시도
-        const formData = new FormData();
-        formData.append("file", filename);
-        formData.append("content", caption);
+        const payload = {
+          file: filename, // Cloudinary URL
+          content: caption,
+          hashTagList: hashtags
+        };
 
         // formData.append("hashTagList", JSON.stringify([]));
 
@@ -60,7 +65,10 @@ export const handleImageSubmit = async (
 
         const response = await fetch("http://localhost:8080/image", {
           method: "POST",
-          body: formData,
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
         });
 
         if (!response.ok) {
@@ -70,22 +78,22 @@ export const handleImageSubmit = async (
         console.log("✅ 서버 업로드 성공");
 
         // 🔵 로컬 저장
-        const imagePath = await saveBlobToFile(blob, filename, "data/postImage");
+        // const imagePath = await saveBlobToFile(blob, filename, "data/postImage");
 
-        const dummyPost = {
-          id: Date.now(),
-          content: caption,
-          fileName: filename,
-          mediaPath: imagePath,
-          type: "image",
-          filter,
-        };
+        // const dummyPost = {
+        //   id: Date.now(),
+        //   content: caption,
+        //   fileName: filename,
+        //   mediaPath: imagePath,
+        //   type: "image",
+        //   filter,
+        // };
 
-        const existing = JSON.parse(localStorage.getItem("posts") || "[]");
-        existing.push(dummyPost);
-        localStorage.setItem("posts", JSON.stringify(existing));
+        // const existing = JSON.parse(localStorage.getItem("posts") || "[]");
+        // existing.push(dummyPost);
+        // localStorage.setItem("posts", JSON.stringify(existing));
 
-        console.log("📦 로컬스토리지 저장 완료:", dummyPost);
+        // console.log("📦 로컬스토리지 저장 완료:", dummyPost);
         onSuccess();
       } catch (err) {
         alert("업로드 중 오류가 발생했습니다.");

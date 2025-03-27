@@ -47,7 +47,14 @@ const App: React.FC = () => {
   const hideRightbarRoutes = ["/profile/:username"];
 
   return (
+    
+
+
     <Box display="flex" sx={{ overflowX: "hidden", width: "100vw" }}>
+
+      {/* <Routes>
+        <Route path="/login" element={<Login />} />
+      </Routes> */}
       {/* Sidebar */}
       <Box flex="0 0 auto" sx={{ paddingRight: "250px" }}>
         <Sidebar
@@ -56,6 +63,7 @@ const App: React.FC = () => {
           onToggleSearch={handleToggleSearch}
         />
       </Box>
+
 
       {/* Main Content */}
       <Box display="flex" flex="1 1 1000px" sx={{ height: "100%", overflow: "auto" }}>
@@ -67,15 +75,15 @@ const App: React.FC = () => {
             <Route path="/messages" element={<Messages />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/notifications" element={<Notifications />} />
-            <Route path="/login" element={<Login />} />
+            {/* <Route path="/login" element={<Login />} /> */}
             <Route path="/signup" element={<Signup />} />
-            <Route path="/hashtag/:tag" element={<HashtagPosts />} />
-            <Route path="*" element={<NotFound />} />
+            <Route path="/HashtagPosts/:tag" element={<HashtagPosts />} />
+            {/* <Route path="*" element={<NotFound />} /> */}
           </Routes>
         </Box>
 
         {/* Rightbar - 특정 페이지에서 숨기기 */}
-        {!location.pathname.startsWith("/profile") && showRightbar && (
+        {!location.pathname.startsWith("/profile")&& !location.pathname.startsWith("/HashtagPosts") && showRightbar && (
           <Box flex="0 0 400px">
             <Rightbar />
           </Box>
@@ -84,22 +92,35 @@ const App: React.FC = () => {
 
       {/* SearchSlider */}
       {isSearchOpen && (
-        <Box
-          sx={{
-            position: "fixed",
-            top: 0,
-            left: isCompact ? "90px" : "250px",
-            width: "400px",
-            height: "100vh",
-            backgroundColor: "white",
-            boxShadow: 3,
-            zIndex: 1500,
-          }}
-          onClick={handleCloseSearch}
-        >
-          <SearchSlider isOpen={isSearchOpen} onClose={handleCloseSearch} />
-        </Box>
-      )}
+  <Box
+    sx={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      zIndex: 1500,
+      backgroundColor: "rgba(0, 0, 0, 0.0)",
+    }}
+    onClick={handleCloseSearch} // 바깥 클릭 시 닫힘
+  >
+    <Box
+      sx={{
+        position: "absolute",
+        top: 0,
+        left: isCompact ? "90px" : "250px",
+        width: "400px",
+        height: "100vh",
+        backgroundColor: "white",
+        boxShadow: 3,
+      }}
+      onClick={(e) => e.stopPropagation()} // ❗️ 슬라이더 안 클릭은 닫힘 방지
+    >
+      <SearchSlider isOpen={isSearchOpen} onClose={handleCloseSearch} />
+    </Box>
+  </Box>
+)}
+
 
       {/* Upload Modal */}
       {showUpload && (

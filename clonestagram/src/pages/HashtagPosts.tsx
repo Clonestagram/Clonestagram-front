@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import {fetchPostbyHashtags} from "../api/fetchPostbyHashtags";
+import "/src/styles/styles.css";
+import PostBox from "../components/PostBox";
 
 interface Post {
   id: number;
   content: string;
-  fileName: string;
-  mediaPath: string;
-  type: "image" | "video";
-  filter: string;
-  hashtags?: string[];
+  mediaName: string;
+  contentType: string;
+  createdAt: string;
 }
 
 const dummyPosts: Post[] = JSON.parse(localStorage.getItem("posts") || "[]");
@@ -18,11 +19,21 @@ const HashtagPosts = () => {
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
 
   useEffect(() => {
-    const matched = dummyPosts.filter(post =>
-      post.content.includes(`#${tag}`) || post.hashtags?.includes(`#${tag}`)
-    );
-    setFilteredPosts(matched);
-  }, [tag]);
+    const loadPosts = async () => {
+      if (tag) {
+        const postdata = await fetchPostbyHashtags(tag);
+        console.log("✅ postdata:", postdata);
+        if (postdata) {
+          setFilteredPosts(postdata);
+        }
+      } else {
+        console.error("❌ Tag is undefined.");
+      }
+    };
+
+    loadPosts();
+  }, []);
+
 
   return (
     <div style={{ padding: "20px" }}>
@@ -30,26 +41,11 @@ const HashtagPosts = () => {
       {filteredPosts.length === 0 ? (
         <p>관련 게시물이 없습니다.</p>
       ) : (
-        <div className="hashtag-post-grid">
-          {filteredPosts.map(post => (
-            <div key={post.id} className="hashtag-post-item">
-              {post.type === "image" ? (
-                <img
-                  src={localStorage.getItem(post.mediaPath) || post.mediaPath}
-                  alt={post.content}
-                  style={{ width: "100%", borderRadius: "8px" }}
-                />
-              ) : (
-                <video
-                  src={localStorage.getItem(post.mediaPath) || post.mediaPath}
-                  controls
-                  style={{ width: "100%", borderRadius: "8px" }}
-                />
-              )}
-              <p style={{ marginTop: "8px", fontSize: "14px" }}>{post.content}</p>
-            </div>
-          ))}
-        </div>
+        <div className="profile-post-grid">
+        {filteredPosts.map((post) => (
+          <PostBox key={post.id} imageUrl={post.mediaName} />
+        ))}
+      </div>
       )}
     </div>
   );

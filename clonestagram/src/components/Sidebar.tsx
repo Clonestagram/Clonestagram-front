@@ -10,6 +10,7 @@ import {
   Heart,
   PlusSquare,
   User,
+  Instagram
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -26,6 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCompact, onOpenUpload, onToggleSear
     padding: '13px 16px',
     color: 'black',
     textDecoration: 'none',
+    justifyContent: isCompact ? "center" : "flex-start"
   } as const;
 
   const sidebarStyle = {
@@ -36,19 +38,26 @@ const Sidebar: React.FC<SidebarProps> = ({ isCompact, onOpenUpload, onToggleSear
     backgroundColor: 'white',
     borderRight: '1px solid #ddd',
     zIndex: 1000,
-    width: isCompact ? '60px' : '250px',
+    width: isCompact ? '94px' : '250px',
+
   } as const;
 
   return (
-    <div style={sidebarStyle} className={isCompact ? "sidebar compact" : "sidebar"}>
+    <div style={sidebarStyle} className={isCompact ? "sidebar-compact" : "sidebar"}>
       <div>
-        <div>
-          <img
-            src="/clonestagram.png"
-            alt="logo"
-            style={{ width: '60%', padding: '12px 0', display: 'flex'}}
-          />
-        </div>
+       {/* 로고 */}
+       <Link to="/" style={{ ...itemStyle, padding: isCompact ? '37px 0': '20px 0' }}>
+          {isCompact ? (
+            <Instagram size={30} />
+          ) : (
+            <img
+              src="/clonestagram.png"
+              alt="logo"
+              style={{ width: '60%'}}
+            />
+          )}
+        </Link>
+
         <Link to="/" style={itemStyle}>
           <Home size={30} /> {!isCompact && '홈'}
         </Link>

@@ -4,7 +4,10 @@
  * Cloudinary를 통해 이미지를 업로드하고 외부 URL을 반환하는 함수
  */
 
-export const uploadToCloudinary = async (file: File): Promise<string | null> => {
+export const uploadToCloudinary = async (
+    file: File,
+    type: "image" | "video" = "image"
+): Promise<string | null> => {
     const CLOUD_NAME = "deggvyhsw";
     const UPLOAD_PRESET = "clonestagram"; // 미리 Cloudinary 대시보드에서 생성해야 함
   
@@ -13,7 +16,7 @@ export const uploadToCloudinary = async (file: File): Promise<string | null> => 
     formData.append("upload_preset", UPLOAD_PRESET);
   
     try {
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${type}/upload`, {
         method: "POST",
         body: formData,
       });

@@ -77,7 +77,7 @@ const Profile: React.FC = () => {
       <div className="profile-post-container">
       <div className="profile-post-grid">
         {posts.map((post) => (
-          <PostBox key={post.id} imageUrl={post.mediaName} />
+          <PostBox key={post.id} mediaUrl={post.mediaName} />
         ))}
       </div>
       </div>

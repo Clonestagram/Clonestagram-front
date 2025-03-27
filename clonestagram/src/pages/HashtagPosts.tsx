@@ -43,7 +43,7 @@ const HashtagPosts = () => {
       ) : (
         <div className="profile-post-grid">
         {filteredPosts.map((post) => (
-          <PostBox key={post.id} imageUrl={post.mediaName} />
+          <PostBox key={post.id} mediaUrl={post.mediaName} />
         ))}
       </div>
       )}

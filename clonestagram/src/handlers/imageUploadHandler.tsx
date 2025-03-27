@@ -40,7 +40,7 @@ export const handleImageSubmit = async (
 
 
       try {
-        const url = await uploadToCloudinary(file);
+        const url = await uploadToCloudinary(file, "image");
         if (url) {
           console.log("✅ Cloudinary 업로드 완료 URL:", url);
         }
@@ -77,23 +77,6 @@ export const handleImageSubmit = async (
 
         console.log("✅ 서버 업로드 성공");
 
-        // 🔵 로컬 저장
-        // const imagePath = await saveBlobToFile(blob, filename, "data/postImage");
-
-        // const dummyPost = {
-        //   id: Date.now(),
-        //   content: caption,
-        //   fileName: filename,
-        //   mediaPath: imagePath,
-        //   type: "image",
-        //   filter,
-        // };
-
-        // const existing = JSON.parse(localStorage.getItem("posts") || "[]");
-        // existing.push(dummyPost);
-        // localStorage.setItem("posts", JSON.stringify(existing));
-
-        // console.log("📦 로컬스토리지 저장 완료:", dummyPost);
         onSuccess();
       } catch (err) {
         alert("업로드 중 오류가 발생했습니다.");

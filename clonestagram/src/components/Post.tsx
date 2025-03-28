@@ -13,6 +13,7 @@ import {
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloseIcon from "@mui/icons-material/Close";
 import "/src/styles/styles.css";
+import EditPostDialog from "./EditPostDialog";
 
 import { FeedResponseDto } from "../api/fetchFeedAPI";
 import Contents from "./Contents";
@@ -54,7 +55,7 @@ const Post: React.FC<PostProps> = ({ data, onDelete }) => {
   const [editOpen, setEditOpen] = useState<boolean>(false);
   const [userData, setUserData] = useState<UserDetail>();
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null); // 삭제할 댓글 ID
-
+  const [author, setAuthor] = useState<string>("");
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -89,17 +90,26 @@ const Post: React.FC<PostProps> = ({ data, onDelete }) => {
 
     useEffect(() => {
       const fetchUser = async () => {
-        const user = await fetchUserData(data.userId);
-        if (user) setUserData(user);
+        if (data.authorId) {
+          const user = await fetchUserData(data.authorId);
+          if (user) setUserData(user);
+          console.log("👤 사용자 정보:", data.authorId);
+          setAuthor(data.authorId);
+        }else{
+          setAuthor(data.viewerId);
+        }
       }
       fetchUser();
-    }, [data.userId]);
+    }, [data.authorId]);
     
+    const handleEditSubmit = (newContent: string) => {
+      console.log("📝 수정할 내용:", newContent);
+      // → 실제 게시물 수정 API 호출 후 상태 업데이트
+    };
 
-  useEffect(() => {
-    loadComments();
-    
-  }, [data.postId]);
+
+
+  
 
   const logCommentOwnership = (comments: PostComment[]) => {
     const loginUserId = getLoginUser().id;
@@ -124,9 +134,9 @@ const Post: React.FC<PostProps> = ({ data, onDelete }) => {
         {/* 헤더 */}
         <div className="post-header">
           <div className="profile-pic">
-          <ProfilePicture userId={data.userId} profileImageUrl={userData?.profileimg || ""} username={userData?.username||""} size={30}/>
+          <ProfilePicture userId={author} profileImageUrl={userData?.profileimg || ""} username={data.username} size={30}/>
           </div>
-          <span className="username">{userData?.username}</span>
+          <span className="username">{data.username}</span>
           <IconButton onClick={handleMenuClick}>
             <MoreVertIcon />
           </IconButton>
@@ -151,7 +161,7 @@ const Post: React.FC<PostProps> = ({ data, onDelete }) => {
           {comments.map((c) => (
             <div key={c.id} className="comment-item" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div>
-                <strong>User {c.userId}:</strong> {c.content}
+                <strong>{c.username}:</strong> {c.content}
               </div>
               {Number(c.userId) === Number(getLoginUser().id) &&  (
                 <IconButton onClick={() => setDeleteTargetId(c.id)} size="small">
@@ -188,6 +198,16 @@ const Post: React.FC<PostProps> = ({ data, onDelete }) => {
           <Button onClick={confirmDeleteComment} color="error" variant="contained">삭제</Button>
         </DialogActions>
       </Dialog>
+
+      {/* ✅ 게시물 수정 다이얼로그 */}
+      {editOpen && (
+        <EditPostDialog
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        onSubmit={handleEditSubmit}
+        initialContent={data.content}
+      />   
+      )}
     </div>
   );
 };

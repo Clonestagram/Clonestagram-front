@@ -1,4 +1,4 @@
-export const fetchUserData = async ( profileUser : String ) => {
+export const fetchUserData = async ( profileUser : string ) => {
     try {
       console.log("🚀 유저 정보 불러오는 중...", );
       const response = await fetch(`http://localhost:8080/${profileUser}/profile`, {
@@ -18,4 +18,8 @@ export const fetchUserData = async ( profileUser : String ) => {
       return null;
     }
   };
+  
+
+
+
   

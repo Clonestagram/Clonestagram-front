@@ -39,5 +39,19 @@ export const fetchFollowingList = async (userId: String): Promise<string[]> => {
       return [];
     }
   };
+
+  export const deleteFollowRelation = async (fromUserId: string, toUserId: string) => {
+    
+    const res = await fetch(`http://localhost:8080/follow/${fromUserId}/${toUserId}`, {
+      method: "DELETE", 
+    });
+  
+    if (!res.ok) throw new Error("❌ 팔로우 삭제 실패");
+  
+    const message = await res.text();
+    console.log("🗑️ 팔로우 관계 삭제 완료:", message);
+    return true;
+  };
+  
   
   

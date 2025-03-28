@@ -584,3 +584,7 @@
   text-decoration: none;
   color: inherit;
 }
+
+.clickable:hover {
+  text-decoration: underline;
+}

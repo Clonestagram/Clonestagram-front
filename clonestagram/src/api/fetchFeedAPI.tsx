@@ -4,7 +4,8 @@ import getLoginUser from "../data/loginUser";
 export interface FeedResponseDto {
     feedId: string;
     postId: string;
-    userId: string;
+    authorId: string;
+    viewerId: string;
     username: string;
     content: string;
     mediaUrl: string;
@@ -54,4 +55,57 @@ export const removeSeenFeeds = async (postIds: string[]) => {
       return false;
     }
   };
+
+  export const fetchAllFeeds = async (page: number): Promise<FeedResponseDto[]> => {
+    try {
+      const res = await fetch(`http://localhost:8080/feeds/all?page=${page}`);
+      if (!res.ok) throw new Error("❌ 전체 피드 조회 실패");
   
+      const data = await res.json();
+      console.log("✅ 전체 피드 조회 결과:", data);
+  
+      const viewerId = getLoginUser().id;
+  
+      return (data.feed.content || []).map((item: any) => ({
+        feedId: item.id.toString(),
+        postId: item.id.toString(),
+        authorId: item.userId.toString(),
+        viewerId: viewerId.toString(),
+        username: data.user.username,
+        content: item.content,
+        mediaUrl: item.mediaName,
+        createdAt: item.createdAt,
+        likeCount: 0,
+      }));
+    } catch (err) {
+      console.error("❌ 전체 피드 오류:", err);
+      return [];
+    }
+  };
+  
+  export const fetchFollowingFeeds = async (page: number): Promise<FeedResponseDto[]> => {
+    try {
+      const res = await fetch(`http://localhost:8080/feeds/follow?page=${page}`);
+      if (!res.ok) throw new Error("❌ 팔로우 피드 조회 실패");
+  
+      const data = await res.json();
+      console.log("✅ 팔로우 피드 조회 결과:", data);
+  
+      const viewerId = getLoginUser().id;
+  
+      return (data.feed.content || []).map((item: any) => ({
+        feedId: item.id.toString(),
+        postId: item.id.toString(),
+        authorId: item.userId.toString(),
+        viewerId: viewerId.toString(),
+        username: data.user.username,
+        content: item.content,
+        mediaUrl: item.mediaName,
+        createdAt: item.createdAt,
+        likeCount: 0,
+      }));
+    } catch (err) {
+      console.error("❌ 팔로우 피드 오류:", err);
+      return [];
+    }
+  };

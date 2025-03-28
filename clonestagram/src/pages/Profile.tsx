@@ -8,6 +8,8 @@ import { fetchUserId } from "../api/fetchUserId";
 import getLoginUser from "../data/loginUser";
 import { fetchFollowingList, fetchFollowState } from "../api/fetchFollowState";
 import { FeedResponseDto } from "../api/fetchFeedAPI";
+import FollowerDialog from "../components/FollowerDialog";
+import { fetchFollowersByUserId, fetchFollowingsByUserId } from "../api/fetchFollowList";
 
 interface PostType {
   id: number;
@@ -35,7 +37,8 @@ const Profile: React.FC = () => {
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
   const isOwnProfile = getLoginUser().username === name;
   const followingList = getLoginUser().followingUserIds;
-
+  const [followerOpen, setFollowerOpen] = useState(false);
+  const [followingOpen, setFollowingOpen] = useState(false);
   const [posts, setPosts] = useState<FeedResponseDto[]>([]);
   const [userData, setUserData] = useState<UserDetail>({
     bio: null,
@@ -91,18 +94,12 @@ const Profile: React.FC = () => {
       // 3. 게시글 로딩
       const data = await fetchUserPosts(userId);
       if (data) {
-        setPosts(data);
+        const enrichedData = data.map((item) => ({
+          ...item,
+          authorId: userId, // 🔥 authorId 필드 추가
+        }));
+        setPosts(enrichedData);
       }
-
-
-          // 🔍 현재 로그인 유저가 해당 유저를 팔로우 중인지 확인
-      // const followingList = getLoginUser().followingUserIds;
-      // console.log("📥 팔로잉 리스트", followingList);
-      // if (name && followingList.includes(name)) {
-      //   setIsFollowing(true);
-      // } else {
-      //   setIsFollowing(false);
-      // }
 
     };
   
@@ -138,8 +135,14 @@ const Profile: React.FC = () => {
           
           <div className="profile-stats">
             <span>게시물 {posts.length}</span>
-            <span>팔로워 {userData.followerCount}</span>
-            <span>팔로우 {userData.followingCount}</span>
+            <div className="profile-stats">
+              <span onClick={() => setFollowerOpen(true)} style={{ cursor: "pointer" }}>
+                팔로워 {userData.followerCount}
+              </span>
+              <span onClick={() => setFollowingOpen(true)} style={{ cursor: "pointer" }}>
+                팔로우 {userData.followingCount}
+              </span>
+            </div>
           </div>
           <p className="profile-bio">{userData.bio}</p>
         </div>
@@ -151,7 +154,38 @@ const Profile: React.FC = () => {
         ))}
       </div>
       </div>
+      <FollowerDialog
+  open={followerOpen}
+  onClose={() => setFollowerOpen(false)}
+  title="팔로워"
+  fetchFn={() => fetchFollowersByUserId(profileUser.toString())}
+  onCountChange={(delta, type) => {
+    if (type === "follower") {
+      setUserData((prev) => ({
+        ...prev,
+        followerCount: (Number(prev.followerCount) + delta).toString(),
+      }));
+    }
+  }}
+/>
+
+<FollowerDialog
+  open={followingOpen}
+  onClose={() => setFollowingOpen(false)}
+  title="팔로잉"
+  fetchFn={() => fetchFollowingsByUserId(profileUser.toString())}
+  onCountChange={(delta, type) => {
+    if (type === "following") {
+      setUserData((prev) => ({
+        ...prev,
+        followingCount: (Number(prev.followingCount) + delta).toString(),
+      }));
+    }
+  }}
+/>
     </div>
+
+    
   );
 };
 

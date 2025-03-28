@@ -6,6 +6,7 @@ import Contents from "./Contents";
 import { FeedResponseDto } from "../api/fetchFeedAPI"
 import { usePostSeenObserver } from "../hooks/usePostSeenObserver";
 import "/src/styles/styles.css"; // 스타일 import 확인!
+import { use, useEffect } from "react";
 
 interface FeedProps {
   data: FeedResponseDto;
@@ -13,6 +14,11 @@ interface FeedProps {
 }
 
 const Feed: React.FC<FeedProps> = ({ data, onSeen }) => {
+
+  useEffect(() => {
+    console.log("Feed 컴포넌트 렌더링", data);
+  } , [data.postId]);
+
   const ref = usePostSeenObserver(data.postId, onSeen);
   return (
     <div ref={ref} className="feed">

@@ -3,17 +3,17 @@ import CommentButton from "./CommentButton";
 import ShareButton from "./ShareButton";
 import CommentSection from "./CommentSection";
 import Contents from "./Contents";
-import { FeedData } from "../data/feedData";
+import { FeedResponseDto } from "../api/fetchFeedAPI"
 import { usePostSeenObserver } from "../hooks/usePostSeenObserver";
 import "/src/styles/styles.css"; // 스타일 import 확인!
 
 interface FeedProps {
-  data: FeedData;
-  onSeen: (postId: number) => void;
+  data: FeedResponseDto;
+  onSeen: (postId: string) => void;
 }
 
 const Feed: React.FC<FeedProps> = ({ data, onSeen }) => {
-  const ref = usePostSeenObserver(data.id, onSeen);
+  const ref = usePostSeenObserver(data.postId, onSeen);
   return (
     <div ref={ref} className="feed">
       {/* 작성자 이름 */}
@@ -22,7 +22,7 @@ const Feed: React.FC<FeedProps> = ({ data, onSeen }) => {
       </div>
 
       {/* 이미지 콘텐츠 */}
-      <Contents image={data.image} />
+      <Contents image={data.mediaUrl} />
 
       {/* 게시물 본문 */}
       <div className="feed-caption">
@@ -31,8 +31,8 @@ const Feed: React.FC<FeedProps> = ({ data, onSeen }) => {
 
       {/* 액션 버튼들 */}
       <div className="action-buttons">
-        <LikeButton likes={data.likes} />
-        <CommentButton postId={data.id} />
+      <LikeButton postId={data.postId.toString()} column={true} />
+        <CommentButton data={data} />
         <ShareButton />
       </div>
     </div>

@@ -433,11 +433,18 @@
 }
 
 .search-item {
-  display: "flex";
-  justifyContent: "space-between";
-  alignItems: "center";
-  padding: "10px 12px";
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 양 끝 정렬 */
+  margin: 10px 0;
+  padding: 5px 10px;
 }
+
+
+/* .search-remove-btn{
+  border: none;
+  cursor: pointer;
+} */
 
 .hashtag-list {
   padding: 10px;
@@ -451,8 +458,9 @@
 }
 
 .profile-container {
-  width: 100%;
+  width: 90%;
   padding: 20px;
+  padding-left: 50px;
 }
 
 .profile-header {
@@ -560,3 +568,19 @@
 /* .sidebar-compact {
   width: 100%;
 } */
+
+.profile-picture {
+  border-radius: 50%;
+  object-fit: cover;
+  transition: transform 0.2s ease;
+}
+
+.profile-picture:hover {
+  transform: scale(1.05);
+}
+
+
+.unstyled-link {
+  text-decoration: none;
+  color: inherit;
+}

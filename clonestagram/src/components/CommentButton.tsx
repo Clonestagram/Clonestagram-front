@@ -5,19 +5,19 @@ import Post from "./Post";
 import feedData from "../data/feedData"; // ✅ feedData 가져오기
 import "/src/styles/styles.css";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import { FeedResponseDto } from "../api/fetchFeedAPI";
 
 interface CommentButtonProps {
-  postId: number;
+  data: FeedResponseDto;
 }
 
-const CommentButton: React.FC<CommentButtonProps> = ({ postId }) => {
+const CommentButton: React.FC<CommentButtonProps> = ({ data }) => {
   const [open, setOpen] = useState<boolean>(false); // ✅ 팝업 상태 관리
 
-  // ✅ 특정 postId에 맞는 데이터 찾기
-  const postData = feedData.find((post) => post.id === postId);
+
 
   const handleOpen = () => {
-    console.log("팝업 열기", postId); // ✅ 콘솔 확인
+    console.log("팝업 열기", data.postId); // ✅ 콘솔 확인
     setOpen(true);
   };
 
@@ -68,8 +68,8 @@ const CommentButton: React.FC<CommentButtonProps> = ({ postId }) => {
         </DialogTitle>
 
         <DialogContent dividers>
-            {postData ? (
-            <Post postId={postId} data={postData} />
+            {data ? (
+            <Post data={data} />
             ) : (
             <p>게시물을 찾을 수 없습니다.</p>
             )}

@@ -17,6 +17,7 @@ import Notifications from "./pages/Notifications";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
+import Reels from "./pages/Reels";
 
 const App: React.FC = () => {
   const isMobile = useMediaQuery("(max-width: 800px)");
@@ -26,6 +27,13 @@ const App: React.FC = () => {
   const [showUpload, setShowUpload] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCompact, setIsCompact] = useState(isMobile);
+
+  const resetAppState = () => {
+    setShowUpload(false);
+    setIsSearchOpen(false);
+    setIsCompact(isMobile);
+  };
+
 
   useEffect(() => {
     if (!isSearchOpen) setIsCompact(isMobile);
@@ -44,11 +52,12 @@ const App: React.FC = () => {
     setIsCompact(isMobile);
   };
 
-  const hideRightbarRoutes = ["/profile/:username"];
+  const hideRightbarRoutes = ["/:name/"];
+
 
   return (
-    
-
+ 
+  
 
     <Box display="flex" sx={{ overflowX: "hidden", width: "100vw" }}>
 
@@ -70,12 +79,12 @@ const App: React.FC = () => {
         <Box flex="1" sx={{ margin: "auto", marginTop: "10px", maxWidth: "1000px" }}>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/profile/:username" element={<Profile />} />
+            <Route path="/:name/" element={<Profile />} />
             <Route path="/post/:postId" element={<PostDetail />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/notifications" element={<Notifications />} />
-            {/* <Route path="/login" element={<Login />} /> */}
+            <Route path="/reels" element={<Reels />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/HashtagPosts/:tag" element={<HashtagPosts />} />
             {/* <Route path="*" element={<NotFound />} /> */}
@@ -134,6 +143,7 @@ const App: React.FC = () => {
         </div>
       )}
     </Box>
+
   );
 };
 

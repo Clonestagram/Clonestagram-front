@@ -1,9 +1,9 @@
 import React from "react";
 
-export default function Notifications() {
+export default function Reels() {
   return (
     <div style={{ textAlign: "center" }}>
-      <h1>알림 페이지 🔔</h1>
+      <h1>Instagram 릴스 </h1>
       <h1>Coming Soon~! </h1>
     </div>
   );

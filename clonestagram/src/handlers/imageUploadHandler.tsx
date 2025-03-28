@@ -2,6 +2,7 @@
 import { extractHashtags } from "../utils/extractHashtags";
 import { getNextIndex, saveBlobToFile } from "../utils/storage";
 import { uploadToCloudinary } from "../utils/uploadToCloudinary";
+import getLoginUser from "../data/loginUser";
 
 export const handleImageSubmit = async (
   file: File,
@@ -11,6 +12,8 @@ export const handleImageSubmit = async (
   caption: string,
   onSuccess: () => void
 ) => {
+
+  const user = getLoginUser().id;
 
   const ctx = canvas.getContext("2d");
   const img = new Image();
@@ -27,7 +30,7 @@ export const handleImageSubmit = async (
       console.error("❌ 2D context를 가져오지 못했습니다.");
       return;
     }
-
+    
     canvas.toBlob(async (blob) => {
       if (!blob) {
         alert("이미지 변환 실패: blob이 null입니다.");
@@ -63,7 +66,7 @@ export const handleImageSubmit = async (
 
         console.log("🚀 서버로 POST 요청 전송 중...");
 
-        const response = await fetch("http://localhost:8080/image", {
+        const response = await fetch(`http://localhost:8080/image?userId=${user}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"

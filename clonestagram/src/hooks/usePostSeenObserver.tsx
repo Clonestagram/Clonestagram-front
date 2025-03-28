@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useInView } from 'react-intersection-observer';
 
-type SeenCallback = (postId: number) => void;
+type SeenCallback = (postId: string) => void;
 
-export const usePostSeenObserver = (postId: number, onSeen: SeenCallback) => {
+export const usePostSeenObserver = (postId: string, onSeen: SeenCallback) => {
   const { ref, inView } = useInView({ threshold: 0.1 });
 
   const hasSeenRef = useRef(false);                // ✅ 이미 seen 처리했는지

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import "/src/styles/styles.css";
 import { Link, useNavigate } from "react-router-dom";
+import { setLoginUserById } from "../data/loginUser";
+import { useAppState } from "../context/AppStateContext"; // ✅ 추가
 
 const Login: React.FC = () => {
   const [form, setForm] = useState({
@@ -11,15 +13,22 @@ const Login: React.FC = () => {
   });
 
   const navigate = useNavigate(); // 훅 사용
+  const { resetAppState } = useAppState(); // ✅ 여기서 가져옴
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("회원가입 정보:", form);
+    console.log("🔐 로그인 정보:", form);
 
-    // 로그인 로직 성공 시
-    navigate("/"); // 👉 App 내부 라우팅으로 이동
+    try {
+      await setLoginUserById(form.email);
+      resetAppState(); // ✅ 상태 초기화
+      navigate("/");
+    } catch (err) {
+      console.error("❌ 로그인 실패:", err);
+    }
   };
 
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };

@@ -12,6 +12,7 @@ import {
   User,
   Instagram
 } from 'lucide-react';
+import getLoginUser from "../data/loginUser";
 
 interface SidebarProps {
   isCompact: boolean;
@@ -79,7 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCompact, onOpenUpload, onToggleSear
         <div onClick={onOpenUpload} style={{ ...itemStyle, cursor: 'pointer' }}>
           <PlusSquare size={30} /> {!isCompact && '만들기'}
         </div>
-        <Link to="/profile/:username" style={itemStyle}>
+        <Link to={`/${getLoginUser().username}/`} style={itemStyle}>
           <User size={30} /> {!isCompact && '프로필'}
         </Link>
       </div>

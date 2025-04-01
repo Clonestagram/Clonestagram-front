@@ -14,7 +14,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloseIcon from "@mui/icons-material/Close";
 import "/src/styles/styles.css";
 import EditPostDialog from "./EditPostDialog";
-
+import defaultProfileImg from "/public/profileImg.jpg"
 import { FeedResponseDto } from "../api/fetchFeedAPI";
 import Contents from "./Contents";
 import {
@@ -23,16 +23,17 @@ import {
   fetchCommentsByPostId,
   PostComment,
 } from "../api/fetchCommentAPI";
-import getLoginUser from "../data/loginUser";
-import { deletePostById } from "../api/fetchPostAPI";
-import Profile from "../pages/Profile";
+import { useLoginUser } from "../hooks/useLoginUser";
+import { updatePostContent, deletePostById } from "../api/fetchPostAPI";
 import ProfilePicture from "./ProfilePicture";
 import { fetchUserData } from "../api/fetchUserData";
 import LikeButton from "./LikeButton";
+import { useAuthorData } from "../hooks/useAuthorData";
 
 interface PostProps {
   data: FeedResponseDto;
   onDelete?: () => void; 
+  onUpdate?: (postId: string, newContent: string) => void;
 }
 
 interface UserDetail {
@@ -48,18 +49,24 @@ interface UserDetail {
 }
 
 
-const Post: React.FC<PostProps> = ({ data, onDelete }) => {
+const Post: React.FC<PostProps> = ({ data, onDelete, onUpdate }) => {
+  const [postData, setPostData] = useState(data);
   const [comments, setComments] = useState<PostComment[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [comment, setComment] = useState("");
   const [editOpen, setEditOpen] = useState<boolean>(false);
-  const [userData, setUserData] = useState<UserDetail>();
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null); // 삭제할 댓글 ID
-  const [author, setAuthor] = useState<string>("");
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleMenuClose = () => setAnchorEl(null);
+  const { author, userData } = useAuthorData(data);
+  const { getLoginUser } = useLoginUser();
+  
+  useEffect(() => {
+    setPostData(data); // ✅ prop 변경 시 state 동기화
+    console.log("Post 컴포넌트 렌더링", data);
+  }, [data]);
 
   const handleDelete = async () => {
     await deletePostById(data.postId);
@@ -77,8 +84,17 @@ const Post: React.FC<PostProps> = ({ data, onDelete }) => {
   const loadComments = async () => {
     const res = await fetchCommentsByPostId(data.postId.toString());
     setComments(res);
-    logCommentOwnership(res);
   };
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      if (postData && postData.postId) {
+        const res = await fetchCommentsByPostId(postData.postId.toString());
+        setComments(res);
+      }
+    };
+    fetchComments();
+  }, [postData]);
 
   const confirmDeleteComment = async () => {
     if (deleteTargetId) {
@@ -88,45 +104,26 @@ const Post: React.FC<PostProps> = ({ data, onDelete }) => {
     }
   };
 
-    useEffect(() => {
-      const fetchUser = async () => {
-        if (data.authorId) {
-          const user = await fetchUserData(data.authorId);
-          if (user) setUserData(user);
-          console.log("👤 사용자 정보:", data.authorId);
-          setAuthor(data.authorId);
-        }else{
-          setAuthor(data.viewerId);
-        }
-      }
-      fetchUser();
-    }, [data.authorId]);
-    
-    const handleEditSubmit = (newContent: string) => {
-      console.log("📝 수정할 내용:", newContent);
-      // → 실제 게시물 수정 API 호출 후 상태 업데이트
-    };
+  const handleEditSubmit = async (newContent: string) => {
+    const success = await updatePostContent(postData.postId.toString(), newContent);
+    if (success) {
+      setPostData((prev) => ({
+        ...prev,
+        content: newContent,
+      }));
 
-
+      onUpdate?.(postData.postId.toString(), newContent);
+    }
+  };
 
   
-
-  const logCommentOwnership = (comments: PostComment[]) => {
-    const loginUserId = getLoginUser().id;
-    comments.forEach((comment) => {
-      const isOwner = comment.userId === loginUserId;
-      console.log(
-        `[비교 검사] comment.userId: (${typeof comment.userId}) ${comment.userId} | loginUser.id: (${typeof loginUserId}) ${loginUserId}`
-      );
-    });
-  };
 
 
   return (
     <div className="post-wrapper">
       {/* 이미지 */}
       <div className="post-image">
-        <Contents content={data.content} image={data.mediaUrl} />
+        <Contents content={postData.content} image={postData.mediaUrl} />
       </div>
 
       {/* 우측 상세 */}
@@ -134,25 +131,34 @@ const Post: React.FC<PostProps> = ({ data, onDelete }) => {
         {/* 헤더 */}
         <div className="post-header">
           <div className="profile-pic">
-          <ProfilePicture userId={author} profileImageUrl={userData?.profileimg || ""} username={data.username} size={30}/>
+          <ProfilePicture profileImageUrl={userData?.profileimg ?? defaultProfileImg} username={userData?.username ?? "Unknown User"} size={30}/>
           </div>
-          <span className="username">{data.username}</span>
+          <span className="username">{userData?.username}</span>
           <IconButton onClick={handleMenuClick}>
             <MoreVertIcon />
           </IconButton>
           <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-            <MenuItem onClick={handleDelete} style={{ color: "red" }}>삭제</MenuItem>
-            <MenuItem onClick={() => {
-              setEditOpen(true);
-              handleMenuClose();
-            }}>수정</MenuItem>
-          </Menu>
+  {/* 🔐 삭제/수정 버튼은 작성자일 경우만 노출 */}
+  {Number(author) === Number(getLoginUser().id) && (
+    <>
+      <MenuItem onClick={handleDelete} style={{ color: "red" }}>삭제</MenuItem>
+      <MenuItem
+        onClick={() => {
+          setEditOpen(true);
+          handleMenuClose();
+        }}
+      >
+        수정
+      </MenuItem>
+    </>
+  )}
+</Menu>
         </div>
 
         {/* 본문 */}
         <div className="post-body">
           <p className="post-caption">
-            <strong>{data.username}</strong> {data.content}
+            <strong>{userData?.username}</strong> {postData.content}
           </p>
         </div>
 
@@ -173,7 +179,7 @@ const Post: React.FC<PostProps> = ({ data, onDelete }) => {
         </div>
       {/* 🔥  좋아요 개수 표시 */}
         <div style={{ fontWeight: 500, marginTop: "1rem" }}>
-        <LikeButton postId={data.postId.toString()} column={false} />
+        <LikeButton postId={postData.postId.toString()} column={false} />
         </div>
         {/* 댓글 입력 */}
         <div style={{ marginTop: "auto" }}>
@@ -205,7 +211,7 @@ const Post: React.FC<PostProps> = ({ data, onDelete }) => {
         open={editOpen}
         onClose={() => setEditOpen(false)}
         onSubmit={handleEditSubmit}
-        initialContent={data.content}
+        initialContent={postData.content}
       />   
       )}
     </div>

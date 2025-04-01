@@ -588,3 +588,29 @@
 .clickable:hover {
   text-decoration: underline;
 }
+
+.profile-edit-container {
+  max-width: 600px;
+  /* margin-left: 20%; */
+  /* padding-left: 20%; */
+  margin: 3rem 2rem;
+  padding: 2rem 5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.profile-preview {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-bio {
+  font-family: 'Georgia', 'serif'; /* 원하는 글씨체로 교체 가능 */
+  padding: 10px;
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 1.6;
+}

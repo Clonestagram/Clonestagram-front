@@ -29,6 +29,7 @@ export const deletePostById = async (postId: string): Promise<boolean> => {
     try {
       const response = await fetch(`http://localhost:8080/image/${postId}`, {
         method: "DELETE",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -63,6 +64,7 @@ export const deletePostById = async (postId: string): Promise<boolean> => {
   
       const response = await fetch(`http://localhost:8080/image/${postId}`, {
         method: "PUT",
+        credentials: "include",
         body: formData,
       });
   
@@ -74,6 +76,29 @@ export const deletePostById = async (postId: string): Promise<boolean> => {
       return true;
     } catch (error) {
       console.error("❌ 게시물 수정 오류:", error);
+      return false;
+    }
+  };
+  
+  export const updatePostContent = async (postId: string, content: string): Promise<boolean> => {
+    try {
+      const formData = new FormData();
+      formData.append("content", content);
+  
+      const res = await fetch(`http://localhost:8080/image/${postId}`, {
+        method: "PUT",
+        credentials: "include",
+        body: formData,
+      });
+  
+      if (!res.ok) {
+        throw new Error("❌ 게시물 수정 실패");
+      }
+  
+      console.log("✅ 게시물 수정 완료");
+      return true;
+    } catch (err) {
+      console.error(err);
       return false;
     }
   };

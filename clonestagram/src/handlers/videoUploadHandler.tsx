@@ -4,11 +4,7 @@ import { getNextIndex } from "../utils/storage";
 import { uploadToCloudinary } from "../utils/uploadToCloudinary";
 
 export const handleVideoSubmit = async (
-  file: File,
-  caption: string,
-  filter: string,
-  onSuccess: () => void
-) => {
+file: File, caption: string, onSuccess: () => void) => {
 
   const index = getNextIndex("image");
   let filename = "";
@@ -39,6 +35,7 @@ export const handleVideoSubmit = async (
  
          const response = await fetch("http://localhost:8080/video", {
            method: "POST",
+            credentials: "include",
            headers: {
              "Content-Type": "application/json"
            },

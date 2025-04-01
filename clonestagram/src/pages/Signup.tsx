@@ -1,22 +1,37 @@
 import React, { useState } from "react";
+import { join, JoinFormData } from "../api/fetchJoinAPI";
 import "/src/styles/styles.css";
 
 const Signup: React.FC = () => {
   const [form, setForm] = useState({
     email: "",
-    fullName: "",
-    username: "",
+    // fullName: "", // → name
+    username: "", // 백엔드에는 사용 안함 (별도 저장 X)
     password: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("회원가입 정보:", form);
-    // 회원가입 API 요청 처리 추가 가능
+
+    const joinData: JoinFormData = {
+      email: form.email,
+      name: form.username, // 백엔드 요구에 맞게 fullName → name
+      password: form.password,
+      confirmPassword: form.password, // 현재 확인 필드 없으므로 동일하게 처리
+    };
+
+    try {
+      const result = await join(joinData);
+      alert(result); // "회원가입 성공"
+      // TODO: 로그인 페이지로 이동 등
+    } catch (err: any) {
+      alert(err.message); // 에러 메시지 출력
+    }
   };
 
   return (
@@ -34,18 +49,19 @@ const Signup: React.FC = () => {
           />
           <input
             type="text"
-            name="fullName"
-            placeholder="성명"
-            value={form.fullName}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
             name="username"
             placeholder="사용자 이름"
             value={form.username}
             onChange={handleChange}
           />
+          {/* <input
+            type="text"
+            name="username"
+            placeholder="사용자 이름"
+            value={form.username}
+            onChange={handleChange}
+            disabled // 현재 백엔드에 저장하지 않으므로 입력만 받고 비활성화 처리
+          /> */}
           <input
             type="password"
             name="password"

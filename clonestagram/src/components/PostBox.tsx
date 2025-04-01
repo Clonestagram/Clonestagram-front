@@ -11,37 +11,37 @@ interface PostBoxProps {
 }
 const PostBox: React.FC<PostBoxProps> = ({ data, onDelete }) => {
   const [open, setOpen] = useState(false);
+  const [postData, setPostData] = useState(data); // ✅ state로 관리
 
-  const isVideo = (url: string): boolean => {
-    return /\.(mp4|mov|webm)$/i.test(url) || url.toLowerCase().includes("video");
-  };
-
-  const thumbnailUrl = isVideo(data.mediaUrl)
-    ? data.mediaUrl
-        .replace("/upload/", "/upload/so_1,w_400,h_300,c_fill/")
-        .replace(/\.(mp4|mov|webm)$/i, ".jpg")
-    : data.mediaUrl;
+  const isVideo = (url: string): boolean =>
+    /\.(mp4|mov|webm)$/i.test(url) || url.toLowerCase().includes("video");
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const handlePostUpdate = (postId: string, newContent: string) => {
+    setPostData(prev => ({
+      ...prev,
+      content: newContent,
+    }));
+  };
+
   return (
     <>
-      <div className="post-thumbnail" onClick={handleOpen}>
-        {isVideo(data.mediaUrl) ? (
+      <div className={"post-thumbnail"} onClick={handleOpen}>
+        {isVideo(postData.mediaUrl) ? (
           <video
-            src={data.mediaUrl}
+            src={postData.mediaUrl}
             className="post-media"
             preload="metadata"
             muted
             controls={false}
           />
         ) : (
-          <img src={data.mediaUrl} alt="post" className="post-media" />
+          <img src={postData.mediaUrl} alt="post" className="post-media" />
         )}
       </div>
 
-      {/* MUI 다이얼로그 */}
       <Dialog
         open={open}
         onClose={handleClose}
@@ -73,8 +73,7 @@ const PostBox: React.FC<PostBoxProps> = ({ data, onDelete }) => {
         </DialogTitle>
 
         <DialogContent dividers>
-          {/* ✅ 상세 Post 렌더링 */}
-          <Post data={data} onDelete={onDelete}/>
+          <Post data={postData} onDelete={onDelete} onUpdate={handlePostUpdate} />
         </DialogContent>
       </Dialog>
     </>

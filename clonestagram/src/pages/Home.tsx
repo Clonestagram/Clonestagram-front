@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import FeedList from "../components/FeedList";
-import { Box, Button, ButtonGroup, Typography } from "@mui/material";
+import { Box, Button, ButtonGroup } from "@mui/material";
 
 export default function Home() {
-  const [selectedType, setSelectedType] = useState<"seeAll" | "following" | "nonSeen">("nonSeen");
+  const [selectedType, setSelectedType] = useState<"seeAll" | "following" | "nonSeen">("seeAll");
 
   return (
     <Box>

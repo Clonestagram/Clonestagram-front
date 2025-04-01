@@ -15,7 +15,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
 import { FollowDto } from "../api/fetchFollowList"; // FollowDto 타입 import
-import { deleteFollowRelation, fetchFollowState } from "../api/fetchFollowState";
+import { fetchFollowState } from "../api/fetchFollowState";
 
 interface FollowerDialogProps {
     open: boolean;
@@ -37,23 +37,23 @@ interface FollowerDialogProps {
     const [isFollowingMap, setIsFollowingMap] = useState<Record<string, boolean>>({});
   
     const handleFollowToggle = async (item: FollowDto) => {
-        const fromUserId = item.fromUserId;
-        const toUserId = item.toUserId;
+        const followerId = item.followerId;
+        const followedId = item.followedId;
       
-        const wasFollowing = isFollowingMap[toUserId]; // 이전 상태
-        const success = await fetchFollowState(fromUserId, toUserId); // 토글 요청
+        const wasFollowing = isFollowingMap[followedId]; // 이전 상태
+        const success = await fetchFollowState(followerId, followedId); // 토글 요청
       
         if (!success) return;
       
         if (title === "팔로워") {
           // 팔로워 관계는 삭제만
-          setFollowList((prev) => prev.filter((f) => f.fromUserId !== item.fromUserId));
+          setFollowList((prev) => prev.filter((f) => f.followerId !== item.followerId));
           onCountChange?.(-1, "follower");
         } else {
           // 팔로잉 버튼 상태 토글
           setIsFollowingMap((prev) => ({
             ...prev,
-            [toUserId]: !wasFollowing,
+            [followedId]: !wasFollowing,
           }));
       
           // 카운트 증감
@@ -67,9 +67,9 @@ interface FollowerDialogProps {
       const data = await fetchFn();
       const parsed = data.map((f) => ({
         ...f,
-        id: f.id.toString(),
-        fromUserId: f.fromUserId.toString(),
-        toUserId: f.toUserId.toString(),
+        id: f.userId.toString(),
+        fromUserId: f.followerId.toString(),
+        toUserId: f.followedId.toString(),
       }));
       setFollowList(parsed);
   
@@ -88,15 +88,15 @@ interface FollowerDialogProps {
     }, [open]);
   
     const filteredList = followList.filter((item) => {
-      const targetName = title === "팔로워" ? item.fromUsername : item.toUsername;
+      const targetName = title === "팔로워" ? item.followerName : item.followedName;
       return targetName.toLowerCase().includes(search.toLowerCase());
     });
   
     const getUsername = (item: FollowDto) =>
-      title === "팔로워" ? item.fromUsername : item.toUsername;
+      title === "팔로워" ? item.followerName : item.followedName;
   
     const getProfileImage = (item: FollowDto) =>
-      title === "팔로워" ? item.fromProfileimg : item.toProfileImg;
+      title === "팔로워" ? item.followerProfileimg : item.followedProfileImg;
   
     return (
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
@@ -122,15 +122,15 @@ interface FollowerDialogProps {
   
           <List>
             {filteredList.map((item) => (
-              <ListItem key={item.id} secondaryAction={
+              <ListItem key={item.userId} secondaryAction={
                 <Button
-                  variant={title === "팔로워" ? "outlined" : isFollowingMap[item.toUserId] ? "contained" : "outlined"}
+                  variant={title === "팔로워" ? "outlined" : isFollowingMap[item.followedId] ? "contained" : "outlined"}
                   color={title === "팔로워" ? "error" : "primary"}
                   onClick={() => handleFollowToggle(item)}
                 >
                   {title === "팔로워"
                     ? "삭제"
-                    : isFollowingMap[item.toUserId] ? "팔로잉" : "팔로우"}
+                    : isFollowingMap[item.followedId] ? "팔로잉" : "팔로우"}
                 </Button>
               }>
                 <ListItemAvatar>

@@ -14,10 +14,9 @@ import PostDetail from "./pages/PostDetail";
 import Messages from "./pages/Messages";
 import Explore from "./pages/Explore";
 import Notifications from "./pages/Notifications";
-import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import NotFound from "./pages/NotFound";
 import Reels from "./pages/Reels";
+import ProfileEdit from "./pages/ProfileEdit";
 
 const App: React.FC = () => {
   const isMobile = useMediaQuery("(max-width: 800px)");
@@ -28,11 +27,6 @@ const App: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCompact, setIsCompact] = useState(isMobile);
 
-  const resetAppState = () => {
-    setShowUpload(false);
-    setIsSearchOpen(false);
-    setIsCompact(isMobile);
-  };
 
 
   useEffect(() => {
@@ -51,8 +45,6 @@ const App: React.FC = () => {
     setIsSearchOpen(false);
     setIsCompact(isMobile);
   };
-
-  const hideRightbarRoutes = ["/:name/"];
 
 
   return (
@@ -87,6 +79,7 @@ const App: React.FC = () => {
             <Route path="/reels" element={<Reels />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/HashtagPosts/:tag" element={<HashtagPosts />} />
+            <Route path="/profile/edit" element={<ProfileEdit />} />
             {/* <Route path="*" element={<NotFound />} /> */}
           </Routes>
         </Box>

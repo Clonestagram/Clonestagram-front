@@ -14,7 +14,10 @@ export interface PostComment {
 
 export const fetchCommentsByPostId = async (postId: string): Promise<PostComment[]> => {
   try {
-    const res = await fetch(`http://localhost:8080/comments/post/${postId}`);
+    const res = await fetch(`http://localhost:8080/comments/post/${postId}`,{
+      method: "GET",
+      credentials: "include",
+  });
     if (!res.ok) throw new Error("❌ 댓글 목록 조회 실패");
 
     const rawComments: PostComment[] = await res.json();
@@ -45,6 +48,7 @@ export const createComment = async (postId: string, userId: string, content: str
     try {
       const res = await fetch("http://localhost:8080/comments", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           postId,
@@ -70,7 +74,9 @@ export const deleteComment = async (commentId: string, requesterId: string) => {
     try {
       const res = await fetch(
         `http://localhost:8080/comments/${commentId}?requesterId=${requesterId}`,
-        { method: "DELETE" }
+        { method: "DELETE",
+          credentials: "include",
+         }
       );
   
       if (!res.ok) throw new Error("❌ 댓글 삭제 실패");

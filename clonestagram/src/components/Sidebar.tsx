@@ -12,7 +12,8 @@ import {
   User,
   Instagram
 } from 'lucide-react';
-import getLoginUser from "../data/loginUser";
+import { useLoginUser } from "../hooks/useLoginUser";
+import LogoutButton from "./LogoutButton";
 
 interface SidebarProps {
   isCompact: boolean;
@@ -40,21 +41,22 @@ const Sidebar: React.FC<SidebarProps> = ({ isCompact, onOpenUpload, onToggleSear
     borderRight: '1px solid #ddd',
     zIndex: 1000,
     width: isCompact ? '94px' : '250px',
-
   } as const;
+
+  const { loginUser } = useLoginUser(); // ✅ 훅에서 상태 가져오기
+  const username = loginUser?.username; // ✅ 안전하게 접근
 
   return (
     <div style={sidebarStyle} className={isCompact ? "sidebar-compact" : "sidebar"}>
       <div>
-       {/* 로고 */}
-       <Link to="/" style={{ ...itemStyle, padding: isCompact ? '37px 0': '20px 0' }}>
+        <Link to="/" style={{ ...itemStyle, padding: isCompact ? '37px 0' : '20px 0' }}>
           {isCompact ? (
             <Instagram size={30} />
           ) : (
             <img
               src="/clonestagram.png"
               alt="logo"
-              style={{ width: '60%'}}
+              style={{ width: '60%' }}
             />
           )}
         </Link>
@@ -80,11 +82,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isCompact, onOpenUpload, onToggleSear
         <div onClick={onOpenUpload} style={{ ...itemStyle, cursor: 'pointer' }}>
           <PlusSquare size={30} /> {!isCompact && '만들기'}
         </div>
-        <Link to={`/${getLoginUser().username}/`} style={itemStyle}>
-          <User size={30} /> {!isCompact && '프로필'}
-        </Link>
+
+        {username && (
+          <Link to={`/${username}/`} style={itemStyle}>
+            <User size={30} /> {!isCompact && '프로필'}
+          </Link>
+        )}
+
+        <div style={{ ...itemStyle, marginTop: 200 }}>
+        <LogoutButton />
       </div>
     </div>
+  </div>
   );
 };
 

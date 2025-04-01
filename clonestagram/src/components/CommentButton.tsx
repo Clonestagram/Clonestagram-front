@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Button, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Post from "./Post";
-import feedData from "../data/feedData"; // ✅ feedData 가져오기
 import "/src/styles/styles.css";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import { FeedResponseDto } from "../api/fetchFeedAPI";
@@ -15,7 +14,14 @@ const CommentButton: React.FC<CommentButtonProps> = ({ data }) => {
   const [open, setOpen] = useState<boolean>(false); // ✅ 팝업 상태 관리
 
 
+  const [posts, setPosts] = useState<FeedResponseDto[]>([]);
 
+  const handlePostUpdate = (postId: string, newContent: string) => {
+    setPosts(prev =>
+      prev.map(p => p.postId === postId ? { ...p, content: newContent } : p)
+    );
+  };
+  
   const handleOpen = () => {
     console.log("팝업 열기", data.postId); // ✅ 콘솔 확인
     setOpen(true);
@@ -69,7 +75,7 @@ const CommentButton: React.FC<CommentButtonProps> = ({ data }) => {
 
         <DialogContent dividers>
             {data ? (
-            <Post data={data} />
+            <Post data={data} onUpdate={handlePostUpdate}/>
             ) : (
             <p>게시물을 찾을 수 없습니다.</p>
             )}

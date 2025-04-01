@@ -3,6 +3,9 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import "/src/styles/styles.css";
 import { handleImageSubmit } from "../handlers/imageUploadHandler";
 import { handleVideoSubmit } from "../handlers/videoUploadHandler";
+import { useLoginUser } from "../hooks/useLoginUser";
+import { uploadTriggerState } from "../recoil/uploadTriggerAtom";
+import { useRecoilState } from "recoil";
 
 const filterOptions = [
   { name: "원본", value: "none" },
@@ -15,6 +18,7 @@ const filterOptions = [
 ];
 
 const Upload = () => {
+  const [trigger, setTrigger] = useRecoilState(uploadTriggerState);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -23,6 +27,7 @@ const Upload = () => {
   const [step, setStep] = useState<"null"|"upload" | "preview" | "filter" | "form">("null");
   const [caption, setCaption] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
+  const { loginUser } = useLoginUser();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
@@ -41,21 +46,26 @@ const Upload = () => {
       return;
     }
     if (file.type.startsWith("video")) {
-      handleVideoSubmit(file, caption, filter, () => {
-        alert("게시물이 저장되었습니다!");
+      handleVideoSubmit(file, caption, () => {
+        // alert("게시물이 저장되었습니다!");
         setStep("upload");
         setImageURL(null);
         setCaption("");
         setFile(null);
       });
     } else {
-      handleImageSubmit(file, imageURL, canvasRef.current!, filter, caption, () => {
-        alert("게시물이 저장되었습니다!");
-        setStep("upload");
-        setImageURL(null);
-        setCaption("");
-        setFile(null);
-      });
+      if (loginUser) {
+        handleImageSubmit(file, imageURL, canvasRef.current!, filter, caption, loginUser.id, () => {
+          // alert("게시물이 저장되었습니다!");
+          setStep("upload");
+          setImageURL(null);
+          setCaption("");
+          setFile(null);
+        },
+        setTrigger);
+      } else {
+        alert("로그인이 필요합니다.");
+      }
     }
   };
 

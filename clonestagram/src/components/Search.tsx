@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { X, Hash } from "lucide-react";
 import "/src/styles/styles.css";
-import ProfilePicture from "./ProfilePicture";
-
+import defaultProfileImg from "/public/profileImg.jpg"
 interface SearchProps {
   search: string;
   setSearch: (value: string) => void;
@@ -19,9 +18,9 @@ interface HashtagInfo {
 }
 
 interface UserSuggestionDto {
+  id: number;
+  profileimg : string;
   username: string;
-  displayName: string;
-  image: string;
 }
 
 const Search: React.FC<SearchProps> = ({
@@ -46,7 +45,11 @@ const Search: React.FC<SearchProps> = ({
 
       try {
         const response = await fetch(
-          `http://localhost:8080/search/tag/suggestions?keyword=${encodeURIComponent(search.replace("#", ""))}`
+          `http://localhost:8080/search/tag/suggestions?keyword=${encodeURIComponent(search.replace("#", ""))}`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
         );
         const data = await response.json();
         setSuggestions(data || []);
@@ -64,10 +67,15 @@ const Search: React.FC<SearchProps> = ({
       if (search && !isHashtagSearch && search.length >= 2) {
         try {
           const res = await fetch(
-            `http://localhost:8080/search/user/suggestions?keyword=${encodeURIComponent(search)}`
+            `http://localhost:8080/search/user/suggestions?keyword=${encodeURIComponent(search)}`,
+            {
+              method: "GET",
+              credentials: "include",
+            }
           );
           const data = await res.json();
           setUserSuggestions(data || []);
+          console.log("✅ 유저 검색 결과:", data);
         } catch (err) {
           console.error("❌ 유저 검색 실패:", err);
         }
@@ -202,7 +210,7 @@ const Search: React.FC<SearchProps> = ({
                   style={{ display: "flex", alignItems: "center", flex: 1 }}
                 >
                   <img
-                    src={user.image}
+                    src={user.profileimg||defaultProfileImg}
                     className="profile-picture"
                     style={{ width: 40, height: 40, marginRight: 10 }}
                   />
@@ -213,12 +221,12 @@ const Search: React.FC<SearchProps> = ({
                     <div className="search-username" style={{ fontWeight: 600 }}>
                       {user.username}
                     </div>
-                    <div
+                    {/* <div
                       className="search-sub"
                       style={{ color: "#888", fontSize: "14px" }}
                     >
                       {user.displayName}
-                    </div>
+                    </div> */}
                   </div>
                 </Link>
               </div>

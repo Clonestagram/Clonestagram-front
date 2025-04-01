@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Feed from "./Feed";
+import { useLoginUser } from "../hooks/useLoginUser";
 import {
   fetchUserFeed,
   removeSeenFeeds,
   FeedResponseDto,
   fetchAllFeeds,
+  fetchFollowingFeeds,
 } from "../api/fetchFeedAPI";
+
 interface FeedListProps {
   type: "seeAll" | "following" | "nonSeen";
 }
@@ -17,33 +20,29 @@ const FeedList: React.FC<FeedListProps> = ({ type }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [seenPostIds, setSeenPostIds] = useState<Set<string>>(new Set());
 
+  const { loginUser } = useLoginUser();
 
-  
-  // ✅ 피드 데이터 로딩
+  // ✅ type이 바뀔 때 초기 데이터 불러오기
   useEffect(() => {
-    const loadFeeds = async () => {
-      if (isLoading || !hasMore) return;
-  
+    const loadInitialFeeds = async () => {
+      setFeeds([]);
+      setPage(0);
+      setHasMore(true);
       setIsLoading(true);
+
       try {
         let data: FeedResponseDto[] = [];
-  
+
         if (type === "nonSeen") {
-          data = await fetchUserFeed(page);
-        } else if (type === "following") {
-          data = await fetchAllFeeds(page);
-        } else if (type === "seeAll") {
-          data = await fetchAllFeeds(page);
+          data = await fetchUserFeed(0);
+        } else if (type === "following" && loginUser) {
+          data = await fetchFollowingFeeds(loginUser.id);
+        } else if (type === "seeAll" && loginUser) {
+          data = await fetchAllFeeds();
         }
-  
+
         if (data.length > 0) {
-          setFeeds((prev) => {
-            const combined = [...prev, ...data];
-            const uniqueMap = new Map(
-              combined.map((item) => [item.feedId, item])
-            );
-            return Array.from(uniqueMap.values());
-          });
+          setFeeds(data);
         } else {
           setHasMore(false);
         }
@@ -53,44 +52,48 @@ const FeedList: React.FC<FeedListProps> = ({ type }) => {
         setIsLoading(false);
       }
     };
-  
-    loadFeeds();
-  }, [page, type]);
-  
 
+    loadInitialFeeds();
+  }, [type, loginUser]);
+
+  // ✅ 무한스크롤: 추가 페이지 불러오기
   useEffect(() => {
-    setFeeds([]);
-    setPage(0);
-    setHasMore(true);
-  }, [type]);
+    if (page === 0 || isLoading || !hasMore) return;
 
-  // ✅ 게시물 확인
-  const handlePostSeen = (postId: string) => {
-    if (type !== "nonSeen") return;
-  
-    if (!seenPostIds.has(postId)) {
-      setSeenPostIds((prev) => new Set(prev).add(postId));
-    }
-  };
+    const loadMoreFeeds = async () => {
+      setIsLoading(true);
 
-  // ✅ 일정 개수 넘으면 본 게시물 삭제
-  useEffect(() => {
-    const sendSeen = async () => {
-      if (type !== "nonSeen") return; // 🔒 다른 타입일 땐 무시
-  
-      if (seenPostIds.size >= 5) {
-        const ids = Array.from(seenPostIds);
-        const success = await removeSeenFeeds(ids);
-        if (success) {
-          setSeenPostIds(new Set());
+      try {
+        let data: FeedResponseDto[] = [];
+
+        if (type === "nonSeen") {
+          data = await fetchUserFeed(page);
+        } else if (type === "following" && loginUser) {
+          data = await fetchFollowingFeeds(loginUser.id);
+        } else if (type === "seeAll" && loginUser) {
+          data = await fetchAllFeeds();
         }
+
+        if (data.length > 0) {
+          setFeeds((prev) => {
+            const combined = [...prev, ...data];
+            const uniqueMap = new Map(combined.map((item) => [item.feedId, item]));
+            return Array.from(uniqueMap.values());
+          });
+        } else {
+          setHasMore(false);
+        }
+      } catch (err) {
+        console.error("❌ 추가 피드 로딩 실패:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
-    sendSeen();
-  }, [seenPostIds, type]);
 
+    loadMoreFeeds();
+  }, [page]);
 
-  // ✅ 무한 스크롤
+  // ✅ 스크롤 감지
   useEffect(() => {
     const handleScroll = () => {
       if (
@@ -106,6 +109,31 @@ const FeedList: React.FC<FeedListProps> = ({ type }) => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hasMore, isLoading]);
+
+  // ✅ 게시물 확인 처리
+  const handlePostSeen = (postId: string) => {
+    if (type !== "nonSeen") return;
+
+    if (!seenPostIds.has(postId)) {
+      setSeenPostIds((prev) => new Set(prev).add(postId));
+    }
+  };
+
+  // ✅ 일정 개수 본 게시물 제거
+  useEffect(() => {
+    const sendSeen = async () => {
+      if (type !== "nonSeen" || seenPostIds.size < 5) return;
+
+      const ids = Array.from(seenPostIds);
+      const success = await removeSeenFeeds(ids);
+
+      if (success) {
+        setSeenPostIds(new Set());
+      }
+    };
+
+    sendSeen();
+  }, [seenPostIds, type]);
 
   return (
     <div className="feed-list">

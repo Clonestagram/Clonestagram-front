@@ -3,7 +3,10 @@ import { fetchLikeCount } from "./fetchPostLilkes";
 
 export const fetchUserPosts = async (profileId: string): Promise<FeedResponseDto[]> => {
   try {
-    const response = await fetch(`http://localhost:8080/feeds/${profileId}`);
+    const response = await fetch(`http://localhost:8080/feeds/user?userId=${profileId}`,{
+      method: "GET",
+      credentials: "include",
+    });
 
     if (!response.ok) {
       throw new Error(`❌ 게시물 요청 실패: ${response.status}`);

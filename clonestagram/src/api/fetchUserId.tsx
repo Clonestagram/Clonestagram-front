@@ -2,6 +2,7 @@ export const fetchUserId = async ( username : String ) => {
     try {
       const response = await fetch(`http://localhost:8080/user/id?username=${username}`, {
         method: "GET",
+        credentials: "include",
         // 임시 유저 기반이라면 Authorization 생략
       });
   

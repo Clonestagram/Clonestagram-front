@@ -55,3 +55,12 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+
+.profile-bio {
+  font-family: 'Georgia', 'serif'; /* 원하는 글씨체로 교체 가능 */
+  text-indent: 1.5em;              /* 들여쓰기 */
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 1.6;
+}

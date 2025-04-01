@@ -7,6 +7,7 @@ export const fetchFollowState = async (
         `http://localhost:8080/follow/${fromUserId}/profile/${toUserId}`,
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -29,9 +30,18 @@ export const fetchFollowState = async (
 
 export const fetchFollowingList = async (userId: String): Promise<string[]> => {
     try {
-      const res = await fetch(`http://localhost:8080/follow/${userId}/profile/following`);
+      const res = await fetch(`http://localhost:8080/follow/${userId}/profile/following`, {
+        method: "GET",
+        credentials: "include", // ✅ 세션 쿠키 포함하여 인증 유지
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
       if (!res.ok) throw new Error(`❌ 팔로잉 리스트 조회 실패: ${res.status}`);
+
       const data = await res.json();
+
       console.log("📥 팔로잉 리스트 조회 성공:", data);
       return data.map((item: { toUsername: string }) => item.toUsername); // 필요한 형식으로 가공
     } catch (err) {
@@ -43,7 +53,11 @@ export const fetchFollowingList = async (userId: String): Promise<string[]> => {
   export const deleteFollowRelation = async (fromUserId: string, toUserId: string) => {
     
     const res = await fetch(`http://localhost:8080/follow/${fromUserId}/${toUserId}`, {
-      method: "DELETE", 
+      method: "DELETE",
+      credentials: "include", // ✅ 세션 인증 유지
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
   
     if (!res.ok) throw new Error("❌ 팔로우 삭제 실패");

@@ -1,13 +1,17 @@
-// src/api/fetchPostByHashtags.ts
 import { FeedResponseDto } from "./fetchFeedAPI";
 import { fetchLikeCount } from "./fetchPostLilkes";
 
 export const fetchPostByHashtags = async (
-  tag: string
+  tag: string,
+  viewerId: string // ✅ 로그인 유저 ID를 파라미터로 받음
 ): Promise<FeedResponseDto[]> => {
   try {
     const response = await fetch(
-      `http://localhost:8080/search/tag?keyword=${encodeURIComponent(tag)}`
+      `http://localhost:8080/search/tag?keyword=${encodeURIComponent(tag)}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
     );
 
     if (!response.ok) {
@@ -21,13 +25,15 @@ export const fetchPostByHashtags = async (
 
     const enrichedPosts: FeedResponseDto[] = await Promise.all(
       posts.map(async (post: any) => {
+        console.log("📌 post:", post);
         const likeCount = await fetchLikeCount(post.id);
 
         return {
-          feedId: 0, // feedId는 없음
-          postId: post.id,
-          userId: post.userId, // 유저 정보가 없으면 0 또는 생략
-          username: "", // 서버에서 username 전달하지 않으면 빈 값 처리
+          feedId: "0", // feedId 없음
+          postId: post.id.toString(),
+          authorId: post.userId?.toString() || "unknown",
+          viewerId, // ✅ 파라미터로 받은 viewerId 사용
+          username: "", // 서버에서 내려주지 않으면 빈 문자열로 처리
           content: post.content,
           mediaUrl: post.mediaName,
           createdAt: post.createdAt,

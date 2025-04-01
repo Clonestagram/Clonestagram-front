@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import "/src/styles/styles.css";
-import { fetchUserData } from "../api/fetchUserData";
 
 interface ProfilePictureProps {
-  userId: String;
   profileImageUrl: string;
   username: string;
   size?: number; // 기본값은 40px
@@ -14,9 +12,8 @@ interface ProfilePictureProps {
 
 
 const ProfilePicture: React.FC<ProfilePictureProps> = ({
-  userId,
-  username,
   profileImageUrl,
+  username,
   size = 40,
   alt = "프로필 사진",
   onClick,
